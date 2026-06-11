@@ -49,5 +49,5 @@ public class Usuario {
     private Boolean estado;
 
     @Column(name = "fecha_registro")
-    private LocalDateTime fechaRegistro;
+    private LocalDateTime fechaRegistro = LocalDateTime.now();
 }
