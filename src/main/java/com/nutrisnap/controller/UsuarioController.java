@@ -1,7 +1,10 @@
 package com.nutrisnap.controller;
 
+import com.nutrisnap.dto.UsuarioRequest;
+import com.nutrisnap.dto.UsuarioResponse;
 import com.nutrisnap.entity.Usuario;
 import com.nutrisnap.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,11 +31,11 @@ public class UsuarioController {
     /**
      * Registrar un nuevo usuario.
      */
-    @PostMapping
-    public Usuario guardarUsuario(@RequestBody Usuario usuario){
-        return usuarioService.guardarUsuario(usuario);
-    }
 
+    @PostMapping("/registro")
+    public UsuarioResponse registrarUsuario(@Valid @RequestBody UsuarioRequest request){
+        return usuarioService.registrarUsuario(request);
+    }
 
     /**
      * Obtener todos los usuarios.
@@ -41,4 +44,5 @@ public class UsuarioController {
     public List<Usuario> listarUsuarios(){
         return usuarioService.listarUsuarios();
     }
+
 }
