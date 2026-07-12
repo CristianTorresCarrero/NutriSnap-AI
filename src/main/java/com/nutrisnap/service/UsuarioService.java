@@ -1,9 +1,10 @@
 package com.nutrisnap.service;
 
+import com.nutrisnap.dto.LoginRequest;
+import com.nutrisnap.dto.LoginResponse;
 import com.nutrisnap.dto.UsuarioRequest;
 import com.nutrisnap.dto.UsuarioResponse;
 import com.nutrisnap.entity.Usuario;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -23,5 +24,8 @@ public interface UsuarioService {
     Optional<Usuario> buscarPorEmail(String email);
     boolean existeEmail(String email);
     UsuarioResponse registrarUsuario(UsuarioRequest request);
+    LoginResponse login(LoginRequest request);
 
 }
+
+
