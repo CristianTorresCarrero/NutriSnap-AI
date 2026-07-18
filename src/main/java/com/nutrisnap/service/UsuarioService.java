@@ -19,13 +19,16 @@ import java.util.Optional;
 public interface UsuarioService {
 
     Usuario guardarUsuario(Usuario usuario);
-    List<Usuario> listarUsuarios();
-    Optional<Usuario> buscarPorId(Long id);
-    Optional<Usuario> buscarPorEmail(String email);
-    boolean existeEmail(String email);
-    UsuarioResponse registrarUsuario(UsuarioRequest request);
-    LoginResponse login(LoginRequest request);
 
+    List<Usuario> listarUsuarios();
+
+    Optional<Usuario> buscarPorId(Long id);
+
+    Optional<Usuario> buscarPorEmail(String email);
+
+    boolean existeEmail(String email);
+
+    UsuarioResponse registrarUsuario(UsuarioRequest request);
 }
 
 

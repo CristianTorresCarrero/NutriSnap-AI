@@ -1,4 +1,12 @@
 package com.nutrisnap.exception;
 
-public class ResourceNotFoundException {
+/**
+ * Se lanza cuando un recurso no existe.
+ */
+public class ResourceNotFoundException extends ApiException {
+
+    public ResourceNotFoundException(String recurso) {
+        super(recurso + " no encontrado.");
+    }
+
 }

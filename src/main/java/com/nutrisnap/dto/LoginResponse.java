@@ -12,12 +12,17 @@ import lombok.Data;
  * -------------------------------------------------------
  */
 
-@Data
 @Builder
+@Data
 public class LoginResponse {
 
-    private Long id;
+    private String token;
+
+    private String tokenType;
+
+    private Long expiresIn;
+
     private String nombre;
+
     private String email;
-    private String mensaje;
 }

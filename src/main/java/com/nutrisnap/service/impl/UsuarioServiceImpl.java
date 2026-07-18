@@ -4,12 +4,11 @@ package com.nutrisnap.service.impl;
 import com.nutrisnap.dto.UsuarioRequest;
 import com.nutrisnap.dto.UsuarioResponse;
 import com.nutrisnap.entity.Usuario;
+import com.nutrisnap.exception.EmailAlreadyExistsException;
 import com.nutrisnap.repository.UsuarioRepository;
 import com.nutrisnap.service.UsuarioService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.nutrisnap.dto.LoginRequest;
-import com.nutrisnap.dto.LoginResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +58,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UsuarioResponse registrarUsuario(UsuarioRequest request){
 
         if(usuarioRepository.existsByEmail(request.getEmail())){
-            throw new RuntimeException("El correo ya esta registrado");
+            throw new EmailAlreadyExistsException();
         }
 
         Usuario usuario = Usuario.builder()
@@ -78,31 +77,6 @@ public class UsuarioServiceImpl implements UsuarioService {
                 .nombre(usuario.getNombre())
                 .email(usuario.getEmail())
                 .mensaje("Usuario registrado correctamente.")
-                .build();
-    }
-    /**
-     * -------------------------------------------------------
-     * Inicia sesión validando las credenciales del usuario.
-     * -------------------------------------------------------
-     */
-    @Override
-    public LoginResponse login(LoginRequest request){
-
-        // Buscar usuario por correo
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Correo no registrado."));
-
-        // Validar contraseña
-        if(!passwordEncoder.matches(request.getPassword(), usuario.getPassword())){
-            throw new RuntimeException("Contraseña incorrecta.");
-        }
-
-        // Respuesta
-        return LoginResponse.builder()
-                .id(usuario.getId())
-                .nombre(usuario.getNombre())
-                .email(usuario.getEmail())
-                .mensaje("Inicio de sesión exitoso.")
                 .build();
     }
 

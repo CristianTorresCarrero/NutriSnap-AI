@@ -2,33 +2,20 @@ package com.nutrisnap.controller;
 
 import com.nutrisnap.dto.LoginRequest;
 import com.nutrisnap.dto.LoginResponse;
-import com.nutrisnap.service.UsuarioService;
+import com.nutrisnap.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-/**
- * -------------------------------------------------------
- * Proyecto: NutriSnap AI
- *
- * Controlador encargado de la autenticación.
- * -------------------------------------------------------
- */
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    private final UsuarioService usuarioService;
+    private final AuthService authService;
 
-    public AuthController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
-
-    /**
-     * Inicio de sesión.
-     */
     @PostMapping("/login")
     public LoginResponse login(@Valid @RequestBody LoginRequest request) {
-        return usuarioService.login(request);
+        return authService.login(request);
     }
 }

@@ -1,4 +1,13 @@
 package com.nutrisnap.exception;
 
-public class EmailAlreadyExistsException {
+/**
+ * Se lanza cuando un usuario intenta registrarse
+ * con un correo ya existente.
+ */
+public class EmailAlreadyExistsException extends ApiException {
+
+    public EmailAlreadyExistsException() {
+        super("El correo electrónico ya está registrado.");
+    }
+
 }
