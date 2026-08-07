@@ -3,18 +3,19 @@ package com.nutrisnap.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- -------------------------------------------------------
- Proyecto: NutriSnap AI
-
- Entidad encargada de representar a los usuarios
- registrados en la plataforma.
-
- Esta tabla almacena la información necesaria para
- autenticación y gestión de cuentas.
- -------------------------------------------------------
+ * -------------------------------------------------------
+ * Proyecto: NutriSnap AI
+ *
+ * Entidad encargada de representar a los usuarios
+ * registrados en la plataforma.
+ *
+ * Esta tabla almacena la información necesaria para
+ * autenticación y perfil nutricional.
+ * -------------------------------------------------------
  */
 
 @Entity
@@ -28,7 +29,7 @@ import java.time.LocalDateTime;
 
 public class Usuario {
 
-    /*Indentificador unico del Usuario*/
+    /* Identificador único del usuario */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,4 +51,26 @@ public class Usuario {
 
     @Column(name = "fecha_registro")
     private LocalDateTime fechaRegistro = LocalDateTime.now();
+
+    // ===========================
+    // Perfil nutricional
+    // ===========================
+
+    @Column
+    private Double peso;
+
+    @Column
+    private Double altura;
+
+    @Column
+    private Integer edad;
+
+    @Column(length = 20)
+    private String sexo;
+
+    @Column(length = 50)
+    private String objetivo;
+
+    @Column
+    private LocalDate fechaNacimiento;
 }
