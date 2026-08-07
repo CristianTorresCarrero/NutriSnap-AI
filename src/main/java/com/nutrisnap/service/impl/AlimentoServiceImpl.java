@@ -123,4 +123,81 @@ public class AlimentoServiceImpl implements AlimentoService {
                 .fechaRegistro(alimento.getFechaRegistro())
                 .build();
     }
+
+    @Override
+    public AlimentoResponse actualizarAlimento(
+            Long id,
+            AlimentoRequest request) {
+
+        Alimento alimento = alimentoRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Alimento"));
+
+        // Si cambia el nombre, evitar duplicados
+        alimentoRepository.findByNombreIgnoreCase(request.getNombre())
+                .ifPresent(alimentoExistente -> {
+
+                    if (!alimentoExistente.getId().equals(id)) {
+                        throw new IllegalArgumentException(
+                                "Ya existe un alimento registrado con ese nombre."
+                        );
+                    }
+                });
+
+        alimento.setNombre(request.getNombre());
+        alimento.setDescripcion(request.getDescripcion());
+        alimento.setCategoria(request.getCategoria());
+
+        alimento.setCaloriasPor100g(
+                request.getCaloriasPor100g()
+        );
+
+        alimento.setProteinasPor100g(
+                request.getProteinasPor100g()
+        );
+
+        alimento.setCarbohidratosPor100g(
+                request.getCarbohidratosPor100g()
+        );
+
+        alimento.setGrasasPor100g(
+                request.getGrasasPor100g()
+        );
+
+        alimento.setFibraPor100g(
+                request.getFibraPor100g()
+        );
+
+        alimento.setAzucaresPor100g(
+                request.getAzucaresPor100g()
+        );
+
+        alimento.setSodioPor100g(
+                request.getSodioPor100g()
+        );
+
+        alimento = alimentoRepository.save(alimento);
+
+        return convertirAResponse(alimento);
+    }
+
+    @Override
+    public AlimentoResponse desactivarAlimento(Long id) {
+
+        Alimento alimento = alimentoRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Alimento"));
+
+        if (Boolean.FALSE.equals(alimento.getActivo())) {
+            throw new IllegalArgumentException(
+                    "El alimento ya se encuentra desactivado."
+            );
+        }
+
+        alimento.setActivo(false);
+
+        alimento = alimentoRepository.save(alimento);
+
+        return convertirAResponse(alimento);
+    }
 }

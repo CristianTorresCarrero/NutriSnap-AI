@@ -14,4 +14,8 @@ public interface AlimentoService {
     AlimentoResponse buscarPorId(Long id);
 
     AlimentoResponse buscarPorNombre(String nombre);
+
+    AlimentoResponse actualizarAlimento(Long id, AlimentoRequest request);
+
+    AlimentoResponse desactivarAlimento(Long id);
 }

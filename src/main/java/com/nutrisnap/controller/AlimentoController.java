@@ -62,4 +62,22 @@ public class AlimentoController {
 
         return alimentoService.buscarPorNombre(nombre);
     }
+
+    @PutMapping("/{id}")
+    public AlimentoResponse actualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody AlimentoRequest request) {
+
+        return alimentoService.actualizarAlimento(
+                id,
+                request
+        );
+    }
+
+    @PatchMapping("/{id}/desactivar")
+    public AlimentoResponse desactivar(
+            @PathVariable Long id) {
+
+        return alimentoService.desactivarAlimento(id);
+    }
 }
