@@ -2,6 +2,7 @@ package com.nutrisnap.service.impl;
 
 import com.nutrisnap.dto.AlimentoRequest;
 import com.nutrisnap.dto.AlimentoResponse;
+import com.nutrisnap.dto.PorcionNutricionalResponse;
 import com.nutrisnap.entity.Alimento;
 import com.nutrisnap.enums.CategoriaAlimento;
 import com.nutrisnap.exception.ResourceNotFoundException;
@@ -233,5 +234,60 @@ public class AlimentoServiceImpl implements AlimentoService {
                 .stream()
                 .map(this::convertirAResponse)
                 .toList();
+    }
+
+    @Override
+    public PorcionNutricionalResponse calcularPorcion(
+            Long alimentoId,
+            Double cantidadGramos) {
+
+        if (cantidadGramos == null || cantidadGramos <= 0) {
+            throw new IllegalArgumentException(
+                    "La cantidad en gramos debe ser mayor que cero."
+            );
+        }
+
+        Alimento alimento = alimentoRepository.findById(alimentoId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Alimento"));
+
+        if (Boolean.FALSE.equals(alimento.getActivo())) {
+            throw new IllegalArgumentException(
+                    "El alimento se encuentra desactivado."
+            );
+        }
+
+        double factor = cantidadGramos / 100.0;
+
+        return PorcionNutricionalResponse.builder()
+                .alimentoId(alimento.getId())
+                .nombre(alimento.getNombre())
+                .cantidadGramos(cantidadGramos)
+                .calorias(redondear(alimento.getCaloriasPor100g() * factor))
+                .proteinas(redondear(alimento.getProteinasPor100g() * factor))
+                .carbohidratos(redondear(alimento.getCarbohidratosPor100g() * factor))
+                .grasas(redondear(alimento.getGrasasPor100g() * factor))
+                .fibra(calcularOpcional(alimento.getFibraPor100g(), factor))
+                .azucares(calcularOpcional(alimento.getAzucaresPor100g(), factor))
+                .sodio(calcularOpcional(alimento.getSodioPor100g(), factor))
+                .build();
+    }
+
+    private Double calcularOpcional(Double valorPor100g, double factor) {
+
+        if (valorPor100g == null) {
+            return null;
+        }
+
+        return redondear(valorPor100g * factor);
+    }
+
+    private Double redondear(Double valor) {
+
+        if (valor == null) {
+            return null;
+        }
+
+        return Math.round(valor * 100.0) / 100.0;
     }
 }

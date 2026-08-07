@@ -2,6 +2,7 @@ package com.nutrisnap.service;
 
 import com.nutrisnap.dto.AlimentoRequest;
 import com.nutrisnap.dto.AlimentoResponse;
+import com.nutrisnap.dto.PorcionNutricionalResponse;
 import com.nutrisnap.enums.CategoriaAlimento;
 
 import java.util.List;
@@ -24,5 +25,10 @@ public interface AlimentoService {
 
     List<AlimentoResponse> buscarPorCategoria(
             CategoriaAlimento categoria
+    );
+
+    PorcionNutricionalResponse calcularPorcion(
+            Long alimentoId,
+            Double cantidadGramos
     );
 }

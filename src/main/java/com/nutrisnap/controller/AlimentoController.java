@@ -2,6 +2,7 @@ package com.nutrisnap.controller;
 
 import com.nutrisnap.dto.AlimentoRequest;
 import com.nutrisnap.dto.AlimentoResponse;
+import com.nutrisnap.dto.PorcionNutricionalResponse;
 import com.nutrisnap.enums.CategoriaAlimento;
 import com.nutrisnap.service.AlimentoService;
 import jakarta.validation.Valid;
@@ -94,5 +95,16 @@ public class AlimentoController {
             @PathVariable CategoriaAlimento categoria) {
 
         return alimentoService.buscarPorCategoria(categoria);
+    }
+
+    @GetMapping("/{id}/porcion")
+    public PorcionNutricionalResponse calcularPorcion(
+            @PathVariable Long id,
+            @RequestParam Double gramos) {
+
+        return alimentoService.calcularPorcion(
+                id,
+                gramos
+        );
     }
 }
