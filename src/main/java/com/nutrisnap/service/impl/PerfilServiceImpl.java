@@ -39,6 +39,7 @@ public class PerfilServiceImpl implements PerfilService {
                 .edad(usuario.getEdad())
                 .sexo(usuario.getSexo())
                 .objetivo(usuario.getObjetivo())
+                .nivelActividad(usuario.getNivelActividad())
                 .fechaNacimiento(usuario.getFechaNacimiento())
                 .build();
     }
@@ -61,6 +62,7 @@ public class PerfilServiceImpl implements PerfilService {
         usuario.setEdad(request.getEdad());
         usuario.setSexo(request.getSexo());
         usuario.setObjetivo(request.getObjetivo());
+        usuario.setNivelActividad(request.getNivelActividad());
         usuario.setFechaNacimiento(request.getFechaNacimiento());
 
         // Guardar cambios
@@ -76,6 +78,7 @@ public class PerfilServiceImpl implements PerfilService {
                 .edad(usuario.getEdad())
                 .sexo(usuario.getSexo())
                 .objetivo(usuario.getObjetivo())
+                .nivelActividad(usuario.getNivelActividad())
                 .fechaNacimiento(usuario.getFechaNacimiento())
                 .build();
     }

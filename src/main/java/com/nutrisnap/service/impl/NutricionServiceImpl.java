@@ -17,6 +17,7 @@ public class NutricionServiceImpl implements NutricionService {
     @Override
     public CalculoNutricionalResponse calcularNutricion(String email) {
 
+        // Buscar el usuario autenticado
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Usuario"));
@@ -28,9 +29,24 @@ public class NutricionServiceImpl implements NutricionService {
 
         String clasificacion = clasificarIMC(imc);
 
+        Double tmb = calcularTMB(usuario);
+
+        Double caloriasDiarias = calcularCaloriasDiarias(
+                tmb,
+                usuario.getNivelActividad()
+        );
+
+        Double aguaDiaria = calcularAguaDiaria(
+                usuario.getPeso()
+        );
+
+        // Construir respuesta
         return CalculoNutricionalResponse.builder()
                 .imc(redondear(imc))
                 .clasificacionIMC(clasificacion)
+                .tmb(redondear(tmb))
+                .caloriasDiarias(redondear(caloriasDiarias))
+                .aguaDiaria(redondear(aguaDiaria))
                 .build();
     }
 
@@ -79,5 +95,83 @@ public class NutricionServiceImpl implements NutricionService {
         }
 
         return Math.round(valor * 100.0) / 100.0;
+    }
+
+    private Double calcularTMB(Usuario usuario) {
+
+        if (usuario.getPeso() == null ||
+                usuario.getAltura() == null ||
+                usuario.getEdad() == null ||
+                usuario.getSexo() == null) {
+
+            return null;
+        }
+
+        double alturaCm = usuario.getAltura() * 100;
+
+        if (usuario.getSexo().equalsIgnoreCase("Masculino")) {
+
+            return (10 * usuario.getPeso())
+                    + (6.25 * alturaCm)
+                    - (5 * usuario.getEdad())
+                    + 5;
+
+        }
+
+        if (usuario.getSexo().equalsIgnoreCase("Femenino")) {
+
+            return (10 * usuario.getPeso())
+                    + (6.25 * alturaCm)
+                    - (5 * usuario.getEdad())
+                    - 161;
+
+        }
+
+        return null;
+    }
+
+    private Double obtenerFactorActividad(String nivelActividad) {
+
+        if (nivelActividad == null) {
+            return null;
+        }
+
+        return switch (nivelActividad.toUpperCase()) {
+            case "SEDENTARIO" -> 1.20;
+            case "LIGERO" -> 1.375;
+            case "MODERADO" -> 1.55;
+            case "INTENSO" -> 1.725;
+            case "MUY_INTENSO" -> 1.90;
+            default -> null;
+        };
+    }
+
+    private Double calcularCaloriasDiarias(
+            Double tmb,
+            String nivelActividad) {
+
+        if (tmb == null) {
+            return null;
+        }
+
+        Double factorActividad =
+                obtenerFactorActividad(nivelActividad);
+
+        if (factorActividad == null) {
+            return null;
+        }
+
+        return tmb * factorActividad;
+    }
+
+    private Double calcularAguaDiaria(Double peso) {
+
+        if (peso == null || peso <= 0) {
+            return null;
+        }
+
+        double litros = (peso * 35) / 1000;
+
+        return litros;
     }
 }

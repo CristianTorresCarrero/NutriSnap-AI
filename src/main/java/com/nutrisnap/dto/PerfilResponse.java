@@ -33,6 +33,8 @@ public class PerfilResponse {
 
     private String objetivo;
 
+    private String nivelActividad;
+
     private LocalDate fechaNacimiento;
 
 }

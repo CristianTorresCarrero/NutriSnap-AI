@@ -53,8 +53,8 @@ public class Usuario {
     private LocalDateTime fechaRegistro = LocalDateTime.now();
 
     // ===========================
-    // Perfil nutricional
-    // ===========================
+// Perfil nutricional
+// ===========================
 
     @Column
     private Double peso;
@@ -70,6 +70,9 @@ public class Usuario {
 
     @Column(length = 50)
     private String objetivo;
+
+    @Column(length = 30)
+    private String nivelActividad;
 
     @Column
     private LocalDate fechaNacimiento;
