@@ -1,8 +1,6 @@
 package com.nutrisnap.service.impl;
 
-import com.nutrisnap.dto.AlimentoRequest;
-import com.nutrisnap.dto.AlimentoResponse;
-import com.nutrisnap.dto.PorcionNutricionalResponse;
+import com.nutrisnap.dto.*;
 import com.nutrisnap.entity.Alimento;
 import com.nutrisnap.enums.CategoriaAlimento;
 import com.nutrisnap.exception.ResourceNotFoundException;
@@ -289,5 +287,65 @@ public class AlimentoServiceImpl implements AlimentoService {
         }
 
         return Math.round(valor * 100.0) / 100.0;
+    }
+
+    @Override
+    public CalculoComidaResponse calcularComida(
+            CalculoComidaRequest request) {
+
+        if (request == null ||
+                request.getAlimentos() == null ||
+                request.getAlimentos().isEmpty()) {
+
+            throw new IllegalArgumentException(
+                    "La comida debe contener al menos un alimento."
+            );
+        }
+
+        List<PorcionNutricionalResponse> porciones =
+                request.getAlimentos()
+                        .stream()
+                        .map(item ->
+                                calcularPorcion(
+                                        item.getAlimentoId(),
+                                        item.getGramos()
+                                )
+                        )
+                        .toList();
+
+        double caloriasTotales = 0;
+        double proteinasTotales = 0;
+        double carbohidratosTotales = 0;
+        double grasasTotales = 0;
+        double fibraTotal = 0;
+        double azucaresTotales = 0;
+        double sodioTotal = 0;
+
+        for (PorcionNutricionalResponse porcion : porciones) {
+
+            caloriasTotales += valorSeguro(porcion.getCalorias());
+            proteinasTotales += valorSeguro(porcion.getProteinas());
+            carbohidratosTotales += valorSeguro(porcion.getCarbohidratos());
+            grasasTotales += valorSeguro(porcion.getGrasas());
+            fibraTotal += valorSeguro(porcion.getFibra());
+            azucaresTotales += valorSeguro(porcion.getAzucares());
+            sodioTotal += valorSeguro(porcion.getSodio());
+        }
+
+        return CalculoComidaResponse.builder()
+                .alimentos(porciones)
+                .caloriasTotales(redondear(caloriasTotales))
+                .proteinasTotales(redondear(proteinasTotales))
+                .carbohidratosTotales(redondear(carbohidratosTotales))
+                .grasasTotales(redondear(grasasTotales))
+                .fibraTotal(redondear(fibraTotal))
+                .azucaresTotales(redondear(azucaresTotales))
+                .sodioTotal(redondear(sodioTotal))
+                .build();
+    }
+
+    private Double valorSeguro(Double valor) {
+
+        return valor == null ? 0.0 : valor;
     }
 }

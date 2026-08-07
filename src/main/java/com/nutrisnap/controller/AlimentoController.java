@@ -1,8 +1,6 @@
 package com.nutrisnap.controller;
 
-import com.nutrisnap.dto.AlimentoRequest;
-import com.nutrisnap.dto.AlimentoResponse;
-import com.nutrisnap.dto.PorcionNutricionalResponse;
+import com.nutrisnap.dto.*;
 import com.nutrisnap.enums.CategoriaAlimento;
 import com.nutrisnap.service.AlimentoService;
 import jakarta.validation.Valid;
@@ -106,5 +104,12 @@ public class AlimentoController {
                 id,
                 gramos
         );
+    }
+
+    @PostMapping("/calcular-comida")
+    public CalculoComidaResponse calcularComida(
+            @Valid @RequestBody CalculoComidaRequest request) {
+
+        return alimentoService.calcularComida(request);
     }
 }
