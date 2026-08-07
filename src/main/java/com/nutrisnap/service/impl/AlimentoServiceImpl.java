@@ -1,0 +1,126 @@
+package com.nutrisnap.service.impl;
+
+import com.nutrisnap.dto.AlimentoRequest;
+import com.nutrisnap.dto.AlimentoResponse;
+import com.nutrisnap.entity.Alimento;
+import com.nutrisnap.exception.ResourceNotFoundException;
+import com.nutrisnap.repository.AlimentoRepository;
+import com.nutrisnap.service.AlimentoService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * -------------------------------------------------------
+ * Proyecto: NutriSnap AI
+ *
+ * Implementación de la lógica de negocio relacionada
+ * con los alimentos y su información nutricional.
+ * -------------------------------------------------------
+ */
+@Service
+@RequiredArgsConstructor
+public class AlimentoServiceImpl implements AlimentoService {
+
+    private final AlimentoRepository alimentoRepository;
+
+    /**
+     * Registra un nuevo alimento.
+     */
+    @Override
+    public AlimentoResponse registrarAlimento(AlimentoRequest request) {
+
+        // Evitar alimentos duplicados por nombre
+        if (alimentoRepository.existsByNombreIgnoreCase(request.getNombre())) {
+            throw new IllegalArgumentException(
+                    "Ya existe un alimento registrado con ese nombre."
+            );
+        }
+
+        Alimento alimento = Alimento.builder()
+                .nombre(request.getNombre())
+                .descripcion(request.getDescripcion())
+                .categoria(request.getCategoria())
+                .caloriasPor100g(request.getCaloriasPor100g())
+                .proteinasPor100g(request.getProteinasPor100g())
+                .carbohidratosPor100g(request.getCarbohidratosPor100g())
+                .grasasPor100g(request.getGrasasPor100g())
+                .fibraPor100g(request.getFibraPor100g())
+                .azucaresPor100g(request.getAzucaresPor100g())
+                .sodioPor100g(request.getSodioPor100g())
+                .activo(true)
+                .fechaRegistro(LocalDateTime.now())
+                .build();
+
+        alimento = alimentoRepository.save(alimento);
+
+        return convertirAResponse(alimento);
+    }
+
+    /**
+     * Lista únicamente los alimentos activos.
+     */
+    @Override
+    public List<AlimentoResponse> listarAlimentos() {
+
+        return alimentoRepository.findByActivoTrue()
+                .stream()
+                .map(this::convertirAResponse)
+                .toList();
+    }
+
+    /**
+     * Busca un alimento por su ID.
+     */
+    @Override
+    public AlimentoResponse buscarPorId(Long id) {
+
+        Alimento alimento = alimentoRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Alimento"));
+
+        return convertirAResponse(alimento);
+    }
+
+    /**
+     * Busca un alimento por su nombre ignorando
+     * diferencias entre mayúsculas y minúsculas.
+     */
+    @Override
+    public AlimentoResponse buscarPorNombre(String nombre) {
+
+        Alimento alimento = alimentoRepository
+                .findByNombreIgnoreCase(nombre)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Alimento"));
+
+        return convertirAResponse(alimento);
+    }
+
+    /**
+     * Convierte la entidad Alimento a AlimentoResponse.
+     *
+     * Esto evita repetir el mismo builder en todos
+     * los métodos del servicio.
+     */
+    private AlimentoResponse convertirAResponse(Alimento alimento) {
+
+        return AlimentoResponse.builder()
+                .id(alimento.getId())
+                .nombre(alimento.getNombre())
+                .descripcion(alimento.getDescripcion())
+                .categoria(alimento.getCategoria())
+                .caloriasPor100g(alimento.getCaloriasPor100g())
+                .proteinasPor100g(alimento.getProteinasPor100g())
+                .carbohidratosPor100g(alimento.getCarbohidratosPor100g())
+                .grasasPor100g(alimento.getGrasasPor100g())
+                .fibraPor100g(alimento.getFibraPor100g())
+                .azucaresPor100g(alimento.getAzucaresPor100g())
+                .sodioPor100g(alimento.getSodioPor100g())
+                .activo(alimento.getActivo())
+                .fechaRegistro(alimento.getFechaRegistro())
+                .build();
+    }
+}
