@@ -1,5 +1,7 @@
 package com.nutrisnap.entity;
 
+import com.nutrisnap.enums.NivelActividad;
+import com.nutrisnap.enums.ObjetivoNutricional;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -68,11 +70,13 @@ public class Usuario {
     @Column(length = 20)
     private String sexo;
 
-    @Column(length = 50)
-    private String objetivo;
-
+    @Enumerated(EnumType.STRING)
     @Column(length = 30)
-    private String nivelActividad;
+    private ObjetivoNutricional objetivo;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30)
+    private NivelActividad nivelActividad;
 
     @Column
     private LocalDate fechaNacimiento;

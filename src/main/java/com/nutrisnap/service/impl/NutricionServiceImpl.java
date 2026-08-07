@@ -2,6 +2,8 @@ package com.nutrisnap.service.impl;
 
 import com.nutrisnap.dto.CalculoNutricionalResponse;
 import com.nutrisnap.entity.Usuario;
+import com.nutrisnap.enums.NivelActividad;
+import com.nutrisnap.enums.ObjetivoNutricional;
 import com.nutrisnap.exception.ResourceNotFoundException;
 import com.nutrisnap.repository.UsuarioRepository;
 import com.nutrisnap.service.NutricionService;
@@ -33,7 +35,8 @@ public class NutricionServiceImpl implements NutricionService {
 
         Double caloriasDiarias = calcularCaloriasDiarias(
                 tmb,
-                usuario.getNivelActividad()
+                usuario.getNivelActividad(),
+                usuario.getObjetivo()
         );
 
         Double aguaDiaria = calcularAguaDiaria(
@@ -130,27 +133,27 @@ public class NutricionServiceImpl implements NutricionService {
         return null;
     }
 
-    private Double obtenerFactorActividad(String nivelActividad) {
+    private Double obtenerFactorActividad(NivelActividad nivelActividad) {
 
         if (nivelActividad == null) {
             return null;
         }
 
-        return switch (nivelActividad.toUpperCase()) {
-            case "SEDENTARIO" -> 1.20;
-            case "LIGERO" -> 1.375;
-            case "MODERADO" -> 1.55;
-            case "INTENSO" -> 1.725;
-            case "MUY_INTENSO" -> 1.90;
-            default -> null;
+        return switch (nivelActividad) {
+            case SEDENTARIO -> 1.20;
+            case LIGERO -> 1.375;
+            case MODERADO -> 1.55;
+            case INTENSO -> 1.725;
+            case MUY_INTENSO -> 1.90;
         };
     }
 
     private Double calcularCaloriasDiarias(
             Double tmb,
-            String nivelActividad) {
+            NivelActividad nivelActividad,
+            ObjetivoNutricional objetivo) {
 
-        if (tmb == null) {
+        if (tmb == null || nivelActividad == null || objetivo == null) {
             return null;
         }
 
@@ -161,7 +164,14 @@ public class NutricionServiceImpl implements NutricionService {
             return null;
         }
 
-        return tmb * factorActividad;
+        double caloriasMantenimiento =
+                tmb * factorActividad;
+
+        return switch (objetivo) {
+            case BAJAR_PESO -> caloriasMantenimiento - 500;
+            case MANTENER_PESO -> caloriasMantenimiento;
+            case GANAR_PESO -> caloriasMantenimiento + 300;
+        };
     }
 
     private Double calcularAguaDiaria(Double peso) {

@@ -1,5 +1,7 @@
 package com.nutrisnap.dto;
 
+import com.nutrisnap.enums.NivelActividad;
+import com.nutrisnap.enums.ObjetivoNutricional;
 import lombok.Builder;
 import lombok.Data;
 
@@ -31,9 +33,9 @@ public class PerfilResponse {
 
     private String sexo;
 
-    private String objetivo;
+    private ObjetivoNutricional objetivo;
 
-    private String nivelActividad;
+    private NivelActividad nivelActividad;
 
     private LocalDate fechaNacimiento;
 

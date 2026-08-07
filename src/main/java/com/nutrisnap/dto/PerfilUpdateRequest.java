@@ -1,5 +1,7 @@
 package com.nutrisnap.dto;
 
+import com.nutrisnap.enums.NivelActividad;
+import com.nutrisnap.enums.ObjetivoNutricional;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -36,9 +38,9 @@ public class PerfilUpdateRequest {
 
     private String sexo;
 
-    private String objetivo;
+    private ObjetivoNutricional objetivo;
 
-    private String nivelActividad;
+    private NivelActividad nivelActividad;
 
     private LocalDate fechaNacimiento;
 
