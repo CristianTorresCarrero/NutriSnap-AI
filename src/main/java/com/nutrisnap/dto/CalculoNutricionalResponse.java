@@ -26,4 +26,6 @@ public class CalculoNutricionalResponse {
     private Double carbohidratosDiarios;
 
     private Double aguaDiaria;
+
+    private Double porcentajeAjuste;
 }

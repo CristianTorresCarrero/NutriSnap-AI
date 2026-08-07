@@ -23,6 +23,7 @@ public class NutricionServiceImpl implements NutricionService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Usuario"));
+        validarDatosNutricionales(usuario);
 
         Double imc = calcularIMC(
                 usuario.getPeso(),
@@ -71,6 +72,9 @@ public class NutricionServiceImpl implements NutricionService {
                         grasasDiarias
                 );
 
+        Double porcentajeAjuste =
+                obtenerPorcentajeAjuste(usuario.getObjetivo());
+
         // Construir respuesta
         return CalculoNutricionalResponse.builder()
                 .imc(redondear(imc))
@@ -82,6 +86,7 @@ public class NutricionServiceImpl implements NutricionService {
                 .grasasDiarias(redondear(grasasDiarias))
                 .carbohidratosDiarios(redondear(carbohidratosDiarios))
                 .aguaDiaria(redondear(aguaDiaria))
+                .porcentajeAjuste(porcentajeAjuste)
                 .build();
     }
 
@@ -243,11 +248,15 @@ public class NutricionServiceImpl implements NutricionService {
             return null;
         }
 
-        return switch (objetivo) {
-            case BAJAR_PESO -> caloriasMantenimiento - 500;
-            case MANTENER_PESO -> caloriasMantenimiento;
-            case GANAR_PESO -> caloriasMantenimiento + 300;
-        };
+        Double porcentajeAjuste =
+                obtenerPorcentajeAjuste(objetivo);
+
+        if (porcentajeAjuste == null) {
+            return null;
+        }
+
+        return caloriasMantenimiento
+                * (1 + porcentajeAjuste / 100);
     }
 
     private Double calcularProteinasDiarias(
@@ -302,5 +311,58 @@ public class NutricionServiceImpl implements NutricionService {
         }
 
         return caloriasRestantes / 4;
+    }
+
+    private void validarDatosNutricionales(Usuario usuario) {
+
+        if (usuario.getPeso() == null || usuario.getPeso() <= 0) {
+            throw new IllegalArgumentException(
+                    "El peso debe estar registrado y ser mayor que cero."
+            );
+        }
+
+        if (usuario.getAltura() == null || usuario.getAltura() <= 0) {
+            throw new IllegalArgumentException(
+                    "La altura debe estar registrada y ser mayor que cero."
+            );
+        }
+
+        if (usuario.getEdad() == null || usuario.getEdad() <= 0) {
+            throw new IllegalArgumentException(
+                    "La edad debe estar registrada y ser mayor que cero."
+            );
+        }
+
+        if (usuario.getSexo() == null || usuario.getSexo().isBlank()) {
+            throw new IllegalArgumentException(
+                    "El sexo debe estar registrado."
+            );
+        }
+
+        if (usuario.getObjetivo() == null) {
+            throw new IllegalArgumentException(
+                    "El objetivo nutricional debe estar registrado."
+            );
+        }
+
+        if (usuario.getNivelActividad() == null) {
+            throw new IllegalArgumentException(
+                    "El nivel de actividad debe estar registrado."
+            );
+        }
+    }
+
+    private Double obtenerPorcentajeAjuste(
+            ObjetivoNutricional objetivo) {
+
+        if (objetivo == null) {
+            return null;
+        }
+
+        return switch (objetivo) {
+            case BAJAR_PESO -> -15.0;
+            case MANTENER_PESO -> 0.0;
+            case GANAR_PESO -> 10.0;
+        };
     }
 }
