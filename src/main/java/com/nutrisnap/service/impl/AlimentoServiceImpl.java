@@ -3,6 +3,7 @@ package com.nutrisnap.service.impl;
 import com.nutrisnap.dto.AlimentoRequest;
 import com.nutrisnap.dto.AlimentoResponse;
 import com.nutrisnap.entity.Alimento;
+import com.nutrisnap.enums.CategoriaAlimento;
 import com.nutrisnap.exception.ResourceNotFoundException;
 import com.nutrisnap.repository.AlimentoRepository;
 import com.nutrisnap.service.AlimentoService;
@@ -199,5 +200,38 @@ public class AlimentoServiceImpl implements AlimentoService {
         alimento = alimentoRepository.save(alimento);
 
         return convertirAResponse(alimento);
+    }
+
+    @Override
+    public List<AlimentoResponse> buscarPorNombreParcial(String nombre) {
+
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Debe ingresar un nombre para realizar la búsqueda."
+            );
+        }
+
+        return alimentoRepository
+                .findByNombreContainingIgnoreCaseAndActivoTrue(nombre.trim())
+                .stream()
+                .map(this::convertirAResponse)
+                .toList();
+    }
+
+    @Override
+    public List<AlimentoResponse> buscarPorCategoria(
+            CategoriaAlimento categoria) {
+
+        if (categoria == null) {
+            throw new IllegalArgumentException(
+                    "La categoría es obligatoria."
+            );
+        }
+
+        return alimentoRepository
+                .findByCategoriaAndActivoTrue(categoria)
+                .stream()
+                .map(this::convertirAResponse)
+                .toList();
     }
 }

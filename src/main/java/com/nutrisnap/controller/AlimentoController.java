@@ -2,6 +2,7 @@ package com.nutrisnap.controller;
 
 import com.nutrisnap.dto.AlimentoRequest;
 import com.nutrisnap.dto.AlimentoResponse;
+import com.nutrisnap.enums.CategoriaAlimento;
 import com.nutrisnap.service.AlimentoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -79,5 +80,19 @@ public class AlimentoController {
             @PathVariable Long id) {
 
         return alimentoService.desactivarAlimento(id);
+    }
+
+    @GetMapping("/buscar-parcial")
+    public List<AlimentoResponse> buscarPorNombreParcial(
+            @RequestParam String nombre) {
+
+        return alimentoService.buscarPorNombreParcial(nombre);
+    }
+
+    @GetMapping("/categoria/{categoria}")
+    public List<AlimentoResponse> buscarPorCategoria(
+            @PathVariable CategoriaAlimento categoria) {
+
+        return alimentoService.buscarPorCategoria(categoria);
     }
 }

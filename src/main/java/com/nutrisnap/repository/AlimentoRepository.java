@@ -15,8 +15,12 @@ public interface AlimentoRepository extends JpaRepository<Alimento, Long> {
 
     boolean existsByNombreIgnoreCase(String nombre);
 
-    List<Alimento> findByCategoria(CategoriaAlimento categoria);
+    List<Alimento> findByCategoriaAndActivoTrue(
+            CategoriaAlimento categoria
+    );
 
     List<Alimento> findByActivoTrue();
+
+    List<Alimento> findByNombreContainingIgnoreCaseAndActivoTrue(String nombre);
 
 }
