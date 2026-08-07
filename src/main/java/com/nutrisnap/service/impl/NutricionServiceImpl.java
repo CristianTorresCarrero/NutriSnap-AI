@@ -43,12 +43,44 @@ public class NutricionServiceImpl implements NutricionService {
                 usuario.getPeso()
         );
 
+        Double caloriasMantenimiento =
+                calcularCaloriasMantenimiento(
+                        tmb,
+                        usuario.getNivelActividad()
+                );
+
+        Double caloriasObjetivo =
+                calcularCaloriasObjetivo(
+                        caloriasMantenimiento,
+                        usuario.getObjetivo()
+                );
+
+        Double proteinasDiarias =
+                calcularProteinasDiarias(
+                        usuario.getPeso(),
+                        usuario.getObjetivo()
+                );
+
+        Double grasasDiarias =
+                calcularGrasasDiarias(caloriasObjetivo);
+
+        Double carbohidratosDiarios =
+                calcularCarbohidratosDiarios(
+                        caloriasObjetivo,
+                        proteinasDiarias,
+                        grasasDiarias
+                );
+
         // Construir respuesta
         return CalculoNutricionalResponse.builder()
                 .imc(redondear(imc))
                 .clasificacionIMC(clasificacion)
                 .tmb(redondear(tmb))
-                .caloriasDiarias(redondear(caloriasDiarias))
+                .caloriasMantenimiento(redondear(caloriasMantenimiento))
+                .caloriasObjetivo(redondear(caloriasObjetivo))
+                .proteinasDiarias(redondear(proteinasDiarias))
+                .grasasDiarias(redondear(grasasDiarias))
+                .carbohidratosDiarios(redondear(carbohidratosDiarios))
                 .aguaDiaria(redondear(aguaDiaria))
                 .build();
     }
@@ -183,5 +215,92 @@ public class NutricionServiceImpl implements NutricionService {
         double litros = (peso * 35) / 1000;
 
         return litros;
+    }
+
+    private Double calcularCaloriasMantenimiento(
+            Double tmb,
+            NivelActividad nivelActividad) {
+
+        if (tmb == null || nivelActividad == null) {
+            return null;
+        }
+
+        Double factorActividad =
+                obtenerFactorActividad(nivelActividad);
+
+        if (factorActividad == null) {
+            return null;
+        }
+
+        return tmb * factorActividad;
+    }
+
+    private Double calcularCaloriasObjetivo(
+            Double caloriasMantenimiento,
+            ObjetivoNutricional objetivo) {
+
+        if (caloriasMantenimiento == null || objetivo == null) {
+            return null;
+        }
+
+        return switch (objetivo) {
+            case BAJAR_PESO -> caloriasMantenimiento - 500;
+            case MANTENER_PESO -> caloriasMantenimiento;
+            case GANAR_PESO -> caloriasMantenimiento + 300;
+        };
+    }
+
+    private Double calcularProteinasDiarias(
+            Double peso,
+            ObjetivoNutricional objetivo) {
+
+        if (peso == null || peso <= 0 || objetivo == null) {
+            return null;
+        }
+
+        double gramosPorKg = switch (objetivo) {
+            case BAJAR_PESO -> 1.8;
+            case MANTENER_PESO -> 1.6;
+            case GANAR_PESO -> 2.0;
+        };
+
+        return peso * gramosPorKg;
+    }
+
+    private Double calcularGrasasDiarias(Double caloriasObjetivo) {
+
+        if (caloriasObjetivo == null || caloriasObjetivo <= 0) {
+            return null;
+        }
+
+        double porcentajeGrasas = 0.25;
+
+        return (caloriasObjetivo * porcentajeGrasas) / 9;
+    }
+
+    private Double calcularCarbohidratosDiarios(
+            Double caloriasObjetivo,
+            Double proteinasDiarias,
+            Double grasasDiarias) {
+
+        if (caloriasObjetivo == null ||
+                proteinasDiarias == null ||
+                grasasDiarias == null) {
+            return null;
+        }
+
+        double caloriasProteinas = proteinasDiarias * 4;
+        double caloriasGrasas = grasasDiarias * 9;
+
+        double caloriasRestantes =
+                caloriasObjetivo
+                        - caloriasProteinas
+                        - caloriasGrasas;
+
+        if (caloriasRestantes <= 0) {
+            return 0.0;
+        }
+
+        return caloriasRestantes / 4;
     }
 }

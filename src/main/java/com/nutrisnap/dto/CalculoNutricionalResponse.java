@@ -15,7 +15,15 @@ public class CalculoNutricionalResponse {
 
     private Double tmb;
 
-    private Double caloriasDiarias;
+    private Double caloriasMantenimiento;
+
+    private Double caloriasObjetivo;
+
+    private Double proteinasDiarias;
+
+    private Double grasasDiarias;
+
+    private Double carbohidratosDiarios;
 
     private Double aguaDiaria;
 }
