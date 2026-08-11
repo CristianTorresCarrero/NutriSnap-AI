@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class AnalisisComidaServiceImpl
         // 3. Crear el análisis principal
         AnalisisComida analisis = AnalisisComida.builder()
                 .usuario(usuario)
+                .tipoComida(request.getTipoComida())
                 .caloriasTotales(calculo.getCaloriasTotales())
                 .proteinasTotales(calculo.getProteinasTotales())
                 .carbohidratosTotales(calculo.getCarbohidratosTotales())
@@ -139,6 +141,7 @@ public class AnalisisComidaServiceImpl
         return AnalisisComidaResponse.builder()
                 .id(analisis.getId())
                 .fechaRegistro(analisis.getFechaRegistro())
+                .tipoComida(analisis.getTipoComida())
                 .caloriasTotales(analisis.getCaloriasTotales())
                 .proteinasTotales(analisis.getProteinasTotales())
                 .carbohidratosTotales(
@@ -149,5 +152,34 @@ public class AnalisisComidaServiceImpl
                 .sodioTotal(analisis.getSodioTotal())
                 .alimentos(detalles)
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AnalisisComidaResponse> obtenerHistorialPorFecha(
+            String email,
+            LocalDate fecha) {
+
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Usuario"));
+
+        LocalDateTime inicioDia =
+                fecha.atStartOfDay();
+
+        LocalDateTime finDia =
+                fecha.plusDays(1)
+                        .atStartOfDay()
+                        .minusNanos(1);
+
+        return analisisComidaRepository
+                .findByUsuarioIdAndFechaRegistroBetweenOrderByFechaRegistroDesc(
+                        usuario.getId(),
+                        inicioDia,
+                        finDia
+                )
+                .stream()
+                .map(this::convertirAResponse)
+                .toList();
     }
 }

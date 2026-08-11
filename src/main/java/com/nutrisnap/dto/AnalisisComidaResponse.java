@@ -1,5 +1,6 @@
 package com.nutrisnap.dto;
 
+import com.nutrisnap.entity.TipoComida;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class AnalisisComidaResponse {
     private Double fibraTotal;
     private Double azucaresTotales;
     private Double sodioTotal;
+    private TipoComida tipoComida;
 
     private List<DetalleAnalisisResponse> alimentos;
 }

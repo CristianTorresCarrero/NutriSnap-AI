@@ -60,4 +60,8 @@ public class AnalisisComida {
     )
     @Builder.Default
     private List<DetalleAnalisisComida> detalles = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_comida", nullable = false, length = 20)
+    private TipoComida tipoComida;
 }

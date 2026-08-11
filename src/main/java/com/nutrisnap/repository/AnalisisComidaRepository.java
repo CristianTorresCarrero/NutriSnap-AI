@@ -18,4 +18,10 @@ public interface AnalisisComidaRepository
             LocalDateTime inicio,
             LocalDateTime fin
     );
+
+    List<AnalisisComida> findByUsuarioIdAndFechaRegistroBetweenOrderByFechaRegistroDesc(
+            Long usuarioId,
+            LocalDateTime inicio,
+            LocalDateTime fin
+    );
 }

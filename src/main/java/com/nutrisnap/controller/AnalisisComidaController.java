@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -50,6 +51,17 @@ public class AnalisisComidaController {
 
         return analisisComidaService.obtenerHistorial(
                 authentication.getName()
+        );
+    }
+
+    @GetMapping("/fecha/{fecha}")
+    public List<AnalisisComidaResponse> obtenerPorFecha(
+            Authentication authentication,
+            @PathVariable LocalDate fecha) {
+
+        return analisisComidaService.obtenerHistorialPorFecha(
+                authentication.getName(),
+                fecha
         );
     }
 }
