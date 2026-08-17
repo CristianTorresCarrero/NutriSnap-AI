@@ -2,9 +2,11 @@ package com.nutrisnap.service.impl;
 
 import com.nutrisnap.dto.DashboardNutricionalResponse;
 import com.nutrisnap.dto.HistorialDiarioResponse;
+import com.nutrisnap.dto.ProgresoPesoResponse;
 import com.nutrisnap.dto.ResumenNutricionalDiarioResponse;
 import com.nutrisnap.service.AnalisisComidaService;
 import com.nutrisnap.service.DashboardNutricionalService;
+import com.nutrisnap.service.RegistroPesoService;
 import com.nutrisnap.service.ResumenNutricionalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,16 +24,14 @@ import java.time.LocalDate;
  */
 @Service
 @RequiredArgsConstructor
-public class DashboardNutricionalServiceImpl
-        implements DashboardNutricionalService {
+public class DashboardNutricionalServiceImpl implements DashboardNutricionalService {
 
     private final ResumenNutricionalService resumenNutricionalService;
-
     private final AnalisisComidaService analisisComidaService;
+    private final RegistroPesoService registroPesoService;
 
     @Override
-    public DashboardNutricionalResponse obtenerDashboard(
-            String email) {
+    public DashboardNutricionalResponse obtenerDashboard(String email) {
 
         // =========================================
         // Obtener resumen nutricional del día
@@ -53,6 +53,8 @@ public class DashboardNutricionalServiceImpl
                                 email,
                                 hoy
                         );
+        ProgresoPesoResponse progresoPeso =
+                registroPesoService.obtenerProgreso(email);
 
         // =========================================
         // Calcular porcentaje de calorías
@@ -116,6 +118,18 @@ public class DashboardNutricionalServiceImpl
 
                 .comidasRegistradas(
                         resumen.getComidasRegistradas())
+
+                .pesoActual(
+                        progresoPeso.getPesoActual())
+
+                .pesoAnterior(
+                        progresoPeso.getPesoAnterior())
+
+                .cambioPeso(
+                        progresoPeso.getCambioPeso())
+
+                .totalRegistrosPeso(
+                        progresoPeso.getTotalRegistros())
 
                 .build();
     }

@@ -49,4 +49,9 @@ public class DashboardNutricionalResponse {
     // =========================
 
     private Integer comidasRegistradas;
+
+    private Double pesoActual;
+    private Double pesoAnterior;
+    private Double cambioPeso;
+    private Integer totalRegistrosPeso;
 }
