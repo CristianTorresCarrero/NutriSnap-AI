@@ -29,4 +29,12 @@ public class HistorialDiarioResponse {
     private Double carbohidratosTotales;
 
     private Double grasasTotales;
+
+    private Double caloriasDesayuno;
+
+    private Double caloriasAlmuerzo;
+
+    private Double caloriasCena;
+
+    private Double caloriasSnack;
 }

@@ -213,6 +213,18 @@ public class AnalisisComidaServiceImpl
                                 analisis.getTipoComida() == TipoComida.SNACK)
                         .toList();
 
+        double caloriasDesayuno =
+                sumarCalorias(desayunos);
+
+        double caloriasAlmuerzo =
+                sumarCalorias(almuerzos);
+
+        double caloriasCena =
+                sumarCalorias(cenas);
+
+        double caloriasSnack =
+                sumarCalorias(snacks);
+
         double caloriasTotales = 0;
         double proteinasTotales = 0;
         double carbohidratosTotales = 0;
@@ -247,6 +259,14 @@ public class AnalisisComidaServiceImpl
                 .proteinasTotales(redondear(proteinasTotales))
                 .carbohidratosTotales(redondear(carbohidratosTotales))
                 .grasasTotales(redondear(grasasTotales))
+                .caloriasDesayuno(
+                        redondear(caloriasDesayuno))
+                .caloriasAlmuerzo(
+                        redondear(caloriasAlmuerzo))
+                .caloriasCena(
+                        redondear(caloriasCena))
+                .caloriasSnack(
+                        redondear(caloriasSnack))
                 .build();
     }
 
@@ -261,5 +281,14 @@ public class AnalisisComidaServiceImpl
         }
 
         return Math.round(valor * 100.0) / 100.0;
+    }
+
+    private Double sumarCalorias(
+            List<AnalisisComidaResponse> analisis) {
+
+        return analisis.stream()
+                .mapToDouble(a ->
+                        valorSeguro(a.getCaloriasTotales()))
+                .sum();
     }
 }
