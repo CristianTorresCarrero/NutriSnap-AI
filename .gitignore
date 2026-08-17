@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Python / IA Service ###
+ia-service/venv/
+ia-service/.venv/
+ia-service/__pycache__/
+ia-service/app/__pycache__/
+*.pyc
+*.pyo
+*.pyd
