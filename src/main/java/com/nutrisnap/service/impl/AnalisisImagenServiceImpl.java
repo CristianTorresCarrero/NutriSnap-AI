@@ -1,16 +1,20 @@
 package com.nutrisnap.service.impl;
 
+import com.nutrisnap.dto.AlimentoDetectadoResponse;
 import com.nutrisnap.dto.AnalisisImagenResponse;
 import com.nutrisnap.exception.ApiException;
 import com.nutrisnap.service.AnalisisImagenService;
+import com.nutrisnap.service.ReconocimientoAlimentosService;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
-public class AnalisisImagenServiceImpl implements AnalisisImagenService {
+public class AnalisisImagenServiceImpl
+        implements AnalisisImagenService {
 
     private static final long TAMANO_MAXIMO =
             5 * 1024 * 1024;
@@ -21,18 +25,33 @@ public class AnalisisImagenServiceImpl implements AnalisisImagenService {
                     MediaType.IMAGE_PNG_VALUE
             );
 
+    private final ReconocimientoAlimentosService
+            reconocimientoAlimentosService;
+
+    public AnalisisImagenServiceImpl(
+            ReconocimientoAlimentosService reconocimientoAlimentosService) {
+
+        this.reconocimientoAlimentosService =
+                reconocimientoAlimentosService;
+    }
+
     @Override
     public AnalisisImagenResponse procesarImagen(
             MultipartFile imagen) {
 
         validarImagen(imagen);
 
+        List<AlimentoDetectadoResponse> alimentosDetectados =
+                reconocimientoAlimentosService
+                        .reconocerAlimentos(imagen);
+
         return AnalisisImagenResponse.builder()
                 .success(true)
                 .nombreArchivo(imagen.getOriginalFilename())
                 .tipoContenido(imagen.getContentType())
                 .tamanoBytes(imagen.getSize())
-                .mensaje("Imagen recibida correctamente.")
+                .mensaje("Imagen analizada correctamente.")
+                .alimentosDetectados(alimentosDetectados)
                 .build();
     }
 
