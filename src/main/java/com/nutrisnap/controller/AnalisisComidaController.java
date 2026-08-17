@@ -2,6 +2,7 @@ package com.nutrisnap.controller;
 
 import com.nutrisnap.dto.AnalisisComidaResponse;
 import com.nutrisnap.dto.CalculoComidaRequest;
+import com.nutrisnap.dto.HistorialDiarioResponse;
 import com.nutrisnap.service.AnalisisComidaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,17 @@ public class AnalisisComidaController {
             @PathVariable LocalDate fecha) {
 
         return analisisComidaService.obtenerHistorialPorFecha(
+                authentication.getName(),
+                fecha
+        );
+    }
+
+    @GetMapping("/fecha/{fecha}/resumen")
+    public HistorialDiarioResponse obtenerHistorialDiario(
+            Authentication authentication,
+            @PathVariable LocalDate fecha) {
+
+        return analisisComidaService.obtenerHistorialDiario(
                 authentication.getName(),
                 fecha
         );

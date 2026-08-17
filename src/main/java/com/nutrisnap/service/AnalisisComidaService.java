@@ -2,6 +2,7 @@ package com.nutrisnap.service;
 
 import com.nutrisnap.dto.AnalisisComidaResponse;
 import com.nutrisnap.dto.CalculoComidaRequest;
+import com.nutrisnap.dto.HistorialDiarioResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +19,11 @@ public interface AnalisisComidaService {
     );
 
     List<AnalisisComidaResponse> obtenerHistorialPorFecha(
+            String email,
+            LocalDate fecha
+    );
+
+    HistorialDiarioResponse obtenerHistorialDiario(
             String email,
             LocalDate fecha
     );

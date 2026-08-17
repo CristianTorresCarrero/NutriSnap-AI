@@ -1,10 +1,7 @@
 package com.nutrisnap.service.impl;
 
 import com.nutrisnap.dto.*;
-import com.nutrisnap.entity.Alimento;
-import com.nutrisnap.entity.AnalisisComida;
-import com.nutrisnap.entity.DetalleAnalisisComida;
-import com.nutrisnap.entity.Usuario;
+import com.nutrisnap.entity.*;
 import com.nutrisnap.exception.ResourceNotFoundException;
 import com.nutrisnap.repository.AlimentoRepository;
 import com.nutrisnap.repository.AnalisisComidaRepository;
@@ -181,5 +178,88 @@ public class AnalisisComidaServiceImpl
                 .stream()
                 .map(this::convertirAResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public HistorialDiarioResponse obtenerHistorialDiario(
+            String email,
+            LocalDate fecha) {
+
+        List<AnalisisComidaResponse> historial =
+                obtenerHistorialPorFecha(email, fecha);
+
+        List<AnalisisComidaResponse> desayunos =
+                historial.stream()
+                        .filter(analisis ->
+                                analisis.getTipoComida() == TipoComida.DESAYUNO)
+                        .toList();
+
+        List<AnalisisComidaResponse> almuerzos =
+                historial.stream()
+                        .filter(analisis ->
+                                analisis.getTipoComida() == TipoComida.ALMUERZO)
+                        .toList();
+
+        List<AnalisisComidaResponse> cenas =
+                historial.stream()
+                        .filter(analisis ->
+                                analisis.getTipoComida() == TipoComida.CENA)
+                        .toList();
+
+        List<AnalisisComidaResponse> snacks =
+                historial.stream()
+                        .filter(analisis ->
+                                analisis.getTipoComida() == TipoComida.SNACK)
+                        .toList();
+
+        double caloriasTotales = 0;
+        double proteinasTotales = 0;
+        double carbohidratosTotales = 0;
+        double grasasTotales = 0;
+
+        for (AnalisisComidaResponse analisis : historial) {
+
+            caloriasTotales += valorSeguro(
+                    analisis.getCaloriasTotales()
+            );
+
+            proteinasTotales += valorSeguro(
+                    analisis.getProteinasTotales()
+            );
+
+            carbohidratosTotales += valorSeguro(
+                    analisis.getCarbohidratosTotales()
+            );
+
+            grasasTotales += valorSeguro(
+                    analisis.getGrasasTotales()
+            );
+        }
+
+        return HistorialDiarioResponse.builder()
+                .fecha(fecha)
+                .desayunos(desayunos)
+                .almuerzos(almuerzos)
+                .cenas(cenas)
+                .snacks(snacks)
+                .caloriasTotales(redondear(caloriasTotales))
+                .proteinasTotales(redondear(proteinasTotales))
+                .carbohidratosTotales(redondear(carbohidratosTotales))
+                .grasasTotales(redondear(grasasTotales))
+                .build();
+    }
+
+    private Double valorSeguro(Double valor) {
+        return valor == null ? 0.0 : valor;
+    }
+
+    private Double redondear(Double valor) {
+
+        if (valor == null) {
+            return null;
+        }
+
+        return Math.round(valor * 100.0) / 100.0;
     }
 }
